@@ -1,12 +1,29 @@
-import MapView from './components/MapView';
-import { dummyPosts } from './data/dummyPosts';
+import { useState } from 'react'
+import { dummyPosts } from './data/dummyPosts'
+import type { CatPost } from './types/CatPost'
+import { MapView } from './components/MapView'
+import { DetailModal } from './components/DetailModal'
 
-const App = () => {
+
+export default function App() {
+  const [posts] = useState<CatPost[]>(dummyPosts)
+  const [selectedPost, setSelectedPost] = useState<CatPost | null>(null)
+
   return (
-    <div>
-      <MapView posts={dummyPosts} />
-    </div>
-  );
-};
+    <>
+      <MapView
+        posts={posts}
+        onPinClick={(post: CatPost) => {
+          setSelectedPost(post)
+        }}
+      />
 
-export default App;
+      {selectedPost && (
+        <DetailModal
+          post={selectedPost}
+          onClose={() => setSelectedPost(null)}
+        />
+      )}
+    </>
+  )
+}
