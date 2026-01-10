@@ -31,6 +31,7 @@ export function PostModal({ onSubmit, onClose }: PostModalProps) {
 
     const newPost: CatPost = {
       id: crypto.randomUUID(),
+      imageUrl: '', // 空文字を渡し、親で data URL に置き換える
       comment,
       lat: 0,
       lng: 0,

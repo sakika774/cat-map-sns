@@ -66,7 +66,7 @@ export default function App() {
 
     const stored: StoredPost = {
       ...post,
-      imageUrl,
+      imageUrl: imageUrl ?? '',
     }
 
     setPosts(prev => {
