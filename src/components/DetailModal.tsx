@@ -15,9 +15,10 @@ import './DetailModal.css'
 type DetailModalProps = {
   post: CatPost
   onClose: () => void
+  position?: { x: number; y: number }
 }
 
-export function DetailModal({ post, onClose }: DetailModalProps) {
+export function DetailModal({ post, onClose, position }: DetailModalProps) {
   const handleBackgroundClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // オーバーレイ背景クリックで閉じる
     if (e.target === e.currentTarget) {
@@ -26,8 +27,21 @@ export function DetailModal({ post, onClose }: DetailModalProps) {
   }
 
   return (
-    <div className="modal-overlay" onClick={handleBackgroundClick}>
-      <div className="modal">
+    <div 
+      className={`modal-overlay ${position ? '' : 'with-background'}`}
+      onClick={handleBackgroundClick}
+    >
+      <div 
+        className="modal"
+        style={position ? {
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          transform: 'translate(-50%, -100%)',
+          marginTop: '-45px',
+        } : {
+          position: 'relative',
+        }}
+      >
         <button className="modal-close" onClick={onClose} aria-label="モーダルを閉じる">
           <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M3 3L17 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -42,8 +56,16 @@ export function DetailModal({ post, onClose }: DetailModalProps) {
         <div className="modal-content">
           <p className="modal-comment">{post.comment}</p>
 
+          <div className="modal-divider"></div>
+
           {post.createdAt && (
-            <small className="modal-date">{formatDate(post.createdAt)}</small>
+            <small className="modal-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="modal-date-icon">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                <path d="M12 6V12L16 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              {formatDate(post.createdAt)}
+            </small>
           )}
         </div>
       </div>

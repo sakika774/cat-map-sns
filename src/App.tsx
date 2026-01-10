@@ -19,6 +19,11 @@ export default function App() {
   const [selectedPost, setSelectedPost] = useState<CatPost | null>(null)
 
   /**
+   * モーダルの画面上の位置
+   */
+  const [modalPosition, setModalPosition] = useState<{ x: number; y: number } | undefined>()
+
+  /**
    * 投稿モーダルの開閉
    */
   const [isPostModalOpen, setIsPostModalOpen] = useState(false)
@@ -44,9 +49,14 @@ export default function App() {
       {/* マップ表示 */}
       <MapView
         posts={posts}
-        onPinClick={(post) => {
+        selectedPost={selectedPost}
+        onPinClick={(post, position) => {
           console.log('📍 [App] pin clicked:', post)
           setSelectedPost(post)
+          setModalPosition(position)
+        }}
+        onModalPositionUpdate={(position) => {
+          setModalPosition(position)
         }}
       />
 
@@ -56,9 +66,11 @@ export default function App() {
           {console.log('🪟 [App] open DetailModal:', selectedPost)}
           <DetailModal
             post={selectedPost}
+            position={modalPosition}
             onClose={() => {
               console.log('❌ [App] close DetailModal')
               setSelectedPost(null)
+              setModalPosition(undefined)
             }}
           />
         </>
