@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import L from 'leaflet'
 import pinImage from '../assets/pin_neko_360.png'
 import type { CatPost } from '../types/CatPost'
@@ -49,6 +49,7 @@ function MapContent({ posts, onPinClick, selectedPost, onModalPositionUpdate }: 
     map.on('move', updatePosition)
     map.on('zoom', updatePosition)
     map.on('resize', updatePosition)
+    updatePosition() // 初期位置合わせ
 
     return () => {
       map.off('move', updatePosition)
@@ -56,6 +57,22 @@ function MapContent({ posts, onPinClick, selectedPost, onModalPositionUpdate }: 
       map.off('resize', updatePosition)
     }
   }, [map, selectedPost, onModalPositionUpdate])
+
+  useEffect(() => {
+    if (selectedPost) {
+      const targetZoom = 15
+      const offsetLat = 0.005
+
+      map.flyTo(
+        [selectedPost.lat + offsetLat, selectedPost.lng], // offsetLatを足す
+        targetZoom, // ここに targetZoom を入れる
+        {
+          animate: true,
+          duration: 1.5
+        }
+      )
+    }
+  }, [map, selectedPost])
 
   return (
     <>
@@ -82,13 +99,55 @@ function MapContent({ posts, onPinClick, selectedPost, onModalPositionUpdate }: 
 }
 
 export function MapView({ posts, onPinClick, selectedPost, onModalPositionUpdate }: Props) {
+  // ★1. 中心座標とローディング状態の管理
+  const [initialCenter, setInitialCenter] = useState<[number, number]>([35.6812, 139.7671]) // デフォルト: 東京駅
+  const [isLocating, setIsLocating] = useState(true)
+
+  // ★2. マウント時に一度だけ現在地を取得
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      console.warn("Geolocation is not supported")
+      setIsLocating(false)
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // 成功したらその位置を中心にする
+        setInitialCenter([position.coords.latitude, position.coords.longitude])
+        setIsLocating(false)
+      },
+      (error) => {
+        console.error("現在地取得失敗:", error)
+        // 失敗してもデフォルト位置（東京）で表示するためにローディングを終わらせる
+        setIsLocating(false)
+      },
+      { timeout: 5000 } // 5秒待ってダメなら諦める
+    )
+  }, [])
+
+  // ★3. 取得中はローディング画面を出す（これがないと東京駅が一瞬映ってしまう）
+  if (isLocating) {
+    return (
+      <div style={{ height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
+        <p>現在地を取得中...</p>
+      </div>
+    )
+  }
+
+  // ★4. 取得完了後にマップを描画
   return (
     <MapContainer
-      center={[35.6812, 139.7671]}
-      zoom={13}
+      center={initialCenter} // ★取得した現在地をセット
+      zoom={15} // ★現在地なら少しズームしたほうが見やすい
       style={{ height: '100vh', width: '100vw' }}
     >
-      <MapContent posts={posts} onPinClick={onPinClick} selectedPost={selectedPost} onModalPositionUpdate={onModalPositionUpdate} />
+      <MapContent 
+        posts={posts} 
+        onPinClick={onPinClick} 
+        selectedPost={selectedPost} 
+        onModalPositionUpdate={onModalPositionUpdate} 
+      />
     </MapContainer>
   )
 }

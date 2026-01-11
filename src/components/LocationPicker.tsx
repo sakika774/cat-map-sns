@@ -1,21 +1,19 @@
-// LocationPicker.tsx
-import { useState } from 'react'
+import { useState, useEffect } from 'react' // ★ useEffectを追加
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
-// ★1. 画像をインポート（パスは MapView と同じ階層ならこれでOK）
+// 画像をインポート
 import pinImage from '../assets/pin_neko_360.png'
 
-// ★2. カスタムアイコンを定義（MapViewから流用）
+// カスタムアイコンを定義
 const customIcon = L.icon({
   iconUrl: pinImage,
-  iconSize: [40, 40],   // サイズ
-  iconAnchor: [20, 40], // アンカー位置（真ん中下）
-  popupAnchor: [0, -40] // ポップアップ位置
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -40]
 })
 
-// Leafletのデフォルトアイコン設定（これがないとアイコンが表示されないことがあるため）
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
@@ -27,7 +25,6 @@ type Props = {
   onCancel: () => void
 }
 
-// クリックイベントをハンドリングするコンポーネント
 function MapEvents({ onLocationSelect }: { onLocationSelect: (latlng: L.LatLng) => void }) {
   useMapEvents({
     click(e) {
@@ -38,8 +35,34 @@ function MapEvents({ onLocationSelect }: { onLocationSelect: (latlng: L.LatLng) 
 }
 
 export function LocationPicker({ onConfirm, onCancel }: Props) {
-  // 初期位置（東京駅周辺）
   const [position, setPosition] = useState<L.LatLng | null>(null)
+  
+  // ★追加: 中心座標のState（初期値は東京駅だが、ローディング中に上書きされる）
+  const [center, setCenter] = useState<[number, number]>([35.6812, 139.7671])
+  // ★追加: ローディング状態
+  const [isLocating, setIsLocating] = useState(true)
+
+  // ★追加: マウント時に現在地を取得
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setIsLocating(false)
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        // 成功したら中心座標を更新
+        setCenter([pos.coords.latitude, pos.coords.longitude])
+        setIsLocating(false)
+      },
+      (err) => {
+        console.error("現在地取得失敗:", err)
+        // 失敗しても地図は表示する（東京駅中心）
+        setIsLocating(false)
+      },
+      { timeout: 5000 }
+    )
+  }, [])
 
   const handleConfirm = () => {
     if (position) {
@@ -47,12 +70,20 @@ export function LocationPicker({ onConfirm, onCancel }: Props) {
     }
   }
 
+  // ★追加: 取得中はローディング表示（白い画面で待機）
+  if (isLocating) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 20000, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#555' }}>現在地を取得中...</div>
+      </div>
+    )
+  }
+
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 20000, background: 'white', display: 'flex', flexDirection: 'column' }}>
-      {/* マップ部分 */}
       <div style={{ flex: 1 }}>
         <MapContainer
-          center={[35.6812, 139.7671]}
+          center={center} // ★取得した center を使用
           zoom={15}
           style={{ height: '100%', width: '100%' }}
         >
@@ -61,15 +92,12 @@ export function LocationPicker({ onConfirm, onCancel }: Props) {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           
-          {/* クリック検知 */}
           <MapEvents onLocationSelect={setPosition} />
 
-          {/* 選択した場所にピンを表示 */}
           {position && <Marker position={position} icon={customIcon} />}
         </MapContainer>
       </div>
 
-      {/* 下部の操作バー */}
       <div style={{ padding: '16px', background: 'white', borderTop: '1px solid #ddd', display: 'flex', gap: '10px', justifyContent: 'center' }}>
         <button 
           onClick={onCancel}

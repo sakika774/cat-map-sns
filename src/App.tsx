@@ -48,7 +48,10 @@ export default function App() {
         setIsLoading(true)
         setFetchError(null)
         const data = await listCatPosts()
+        
+        // ★修正1: ここは 'updatedPosts' ではなく 'data' をセットする
         setPosts(data)
+        
         console.log('✅ [App] Loaded posts from DB:', data.length)
       } catch (error) {
         console.error('❌ [App] Failed to fetch posts:', error)
@@ -140,12 +143,6 @@ export default function App() {
       alert('コメントを入力してください')
       return
     }
-    // NOTE: Temporarily disable location check to allow UI posting tests.
-    // Re-enable this check once coordinate input is implemented.
-    // if (post.lat === 0 && post.lng === 0) {
-    //   alert('位置情報を設定してください')
-    //   return
-    // }
 
     setIsSubmitting(true)
 
@@ -160,8 +157,14 @@ export default function App() {
       // モーダルを閉じる
       setIsPostModalOpen(false)
 
-      // Realtime subscription will automatically add the new post to the map
-      // No need to manually refetch
+      // DBから最新の投稿一覧を再取得して反映
+      const updatedPosts = await listCatPosts()
+      
+      // ★修正2: 取得した updatedPosts を state にセットする行が抜けていました
+      setPosts(updatedPosts)
+
+      // 新しい投稿を選択状態にする（地図移動用）
+      setSelectedPost(newPost)
 
       alert('投稿が完了しました！')
     } catch (error) {
