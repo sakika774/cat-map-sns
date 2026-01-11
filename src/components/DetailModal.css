@@ -51,8 +51,8 @@
 
 .modal-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+    top: 24px;
+    right: 24px;
   background: rgba(255, 255, 255, 0.9);
   border: none;
   border-radius: 50%;

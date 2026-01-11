@@ -19,24 +19,24 @@ export function formatDate(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
 
-  // UTC時刻で日付のみを比較
-  const dateYear = date.getUTCFullYear()
-  const dateMonth = date.getUTCMonth()
-  const dateDate = date.getUTCDate()
+  // 日本時間（JST）で日付のみを比較
+  const dateYear = date.getFullYear()
+  const dateMonth = date.getMonth()
+  const dateDate = date.getDate()
   
-  const nowYear = now.getUTCFullYear()
-  const nowMonth = now.getUTCMonth()
-  const nowDate = now.getUTCDate()
+  const nowYear = now.getFullYear()
+  const nowMonth = now.getMonth()
+  const nowDate = now.getDate()
 
   // 日数差を計算
-  const dateStart = new Date(Date.UTC(dateYear, dateMonth, dateDate, 0, 0, 0, 0))
-  const nowStart = new Date(Date.UTC(nowYear, nowMonth, nowDate, 0, 0, 0, 0))
+  const dateStart = new Date(dateYear, dateMonth, dateDate, 0, 0, 0, 0)
+  const nowStart = new Date(nowYear, nowMonth, nowDate, 0, 0, 0, 0)
 
   const diffTime = nowStart.getTime() - dateStart.getTime()
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
-  // 時間帯を取得（UTC時刻を使用）
-  const hour = date.getUTCHours()
+  // 時間帯を取得（日本時間を使用）
+  const hour = date.getHours()
   const timeOfDay = getTimeOfDay(hour)
 
   // 7日以内の場合は「○日前 時間帯」

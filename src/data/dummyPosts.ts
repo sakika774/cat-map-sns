@@ -55,6 +55,15 @@ export const dummyPosts: CatPost[] = [
     lng: 139.7505,
     imageUrl: 'https://placekitten.com/320/225',
     comment: '丸の内ビルの近くで発見！すごく可愛い顔。',
-    createdAt: '2026-01-09T20:45:00Z',
+    createdAt: '2026-01-11 02:39:21.462319+00',
+  },
+
+  {
+    id: '8',
+    lat: 34,
+    lng: 140,
+    imageUrl: 'https://gnzzovmmhvqjhcgsdheh.supabase.co/storage/v1/object/public/cat-images/cats/b5163268-567b-44b8-9f4e-b586a3e61f31.png',
+    comment: 'あじさいの近くに居た猫！♡',
+    createdAt: '2026-01-11 02:39:21.462319+00',
   },
 ];
