@@ -1,0 +1,41 @@
+/* PostButton.css */
+.fab-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #0b76ef; /* アプリのメインカラー */
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(11, 118, 239, 0.4); /* ふんわりした影 */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* ぷるんと動くアニメーション */
+}
+
+/* ホバー時の動き */
+.fab-btn:hover {
+  transform: scale(1.1) rotate(90deg); /* ちょっと拡大して回転 */
+  background-color: #0062cc;
+  box-shadow: 0 6px 20px rgba(11, 118, 239, 0.6);
+}
+
+/* クリック時の動き */
+.fab-btn:active {
+  transform: scale(0.9);
+}
+
+/* スマホなど画面が小さい時は少し小さく */
+@media (max-width: 480px) {
+  .fab-btn {
+    width: 56px;
+    height: 56px;
+    bottom: 20px;
+    right: 20px;
+  }
+}

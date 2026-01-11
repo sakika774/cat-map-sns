@@ -163,7 +163,7 @@ export function PostModal({ onSubmit, onClose, isSubmitting = false }: PostModal
 
       <div className="pm-modal" role="dialog" aria-modal="true">
         <div className="pm-header">
-          <h2 className="pm-title">New Cat Post</h2>
+          <h2 className="pm-title">猫との出会いを記録 📝</h2>
           <button className="pm-close" onClick={onClose} aria-label="close">✕</button>
         </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { CatPost } from './types/CatPost'
 import { createCatPost, listCatPosts } from './lib/posts'
 import { supabase } from './lib/supabase'
+import { PostButton } from './components/PostButton'
 
 import { MapView } from './components/MapView'
 import { DetailModal } from './components/DetailModal'
@@ -241,21 +242,13 @@ export default function App() {
         </>
       )}
 
-      {/* 仮の投稿ボタン（デザイン後回し） */}
-      <button
-        style={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          zIndex: 1000,
-        }}
+{/* オシャレになった投稿ボタン */}
+      <PostButton 
         onClick={() => {
           console.log('➕ [App] open PostModal button clicked')
           setIsPostModalOpen(true)
-        }}
-      >
-        ＋ 投稿
-      </button>
+        }} 
+      />
     </>
   )
 }
