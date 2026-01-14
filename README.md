@@ -28,4 +28,6 @@ npm run dev
 - npm
 
 ## Notes
-- APIキーや環境変数は現在使用していません
+- Supabase を使用しています。
+- APIキー（Supabase URL / ANON KEY）は環境変数として管理し、
+- リポジトリには含めていません。
